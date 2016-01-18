@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import json
-import makammusicbrainz as mmb
 from tonic_identifier.PitchDistribution import hz_to_cent
 from tonic_identifier.tonic_identifier import TonicLastNote
 
@@ -19,8 +18,8 @@ class NoteModel:
         """
         :rtype: list
         """
-        note_dict = json.load(open("note_dict.json", 'r'))
-        makam_extended = json.load(open("makam_extended.json", 'r'))
+        note_dict = json.load(open("data/note_dict.json", 'r'))
+        makam_extended = json.load(open("data/makam_extended.json", 'r'))
         note_symbol = makam_extended[self.makam]["karar_symbol"]
         tonic_cent = hz_to_cent(self.tonicHz, 8.17579892 * 2)[0]
         teoretical_cent = int(note_dict[note_symbol][0])
@@ -44,13 +43,4 @@ class NoteModel:
 
         return self.performedNotes
 
-pitch = json.load(open("sample_data/1-04_ussak_taksim.json", 'r'))['pitch']
-tonic_identifier = TonicLastNote()
-tonic, pitch, pitch_chunks, distribution, sp = tonic_identifier.identify(pitch)
-tonicHz = tonic["value"]
-recDatas = mmb.getAudioMetadata("sample_data/1-04_ussak_taksim.json")
-print recDatas
-recMakam = recDatas["makam"][0]["mb_tag"]
-print recMakam
-nm = NoteModel(distribution, tonicHz, recMakam)
-print nm.calculate_notes() #added from py
+
