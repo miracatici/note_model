@@ -14,7 +14,7 @@ class NoteModel:
     @staticmethod
     def calculate_notes(distribution, tonichz, makam):
         '''
-        Identify the names of performed notes from histogram peaks.
+        Identify the names of performed notes from histogram peaks (stable pitches).
         '''
 
         # Reading dictionary which contains note symbol, theoretical names and their cent values
