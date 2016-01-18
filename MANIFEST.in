@@ -1,0 +1,3 @@
+recursive-include note_model/data *.json
+
+
