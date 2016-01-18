@@ -36,7 +36,7 @@ class NoteModel:
         note_symbol = makam_extended[makam]["karar_symbol"]
 
         # Conversion hertz to cent, both of performed and theoretical values
-        c0 = 16.35                                                              # Reference is C0, unit is Hz
+        c0 = 16.35                                                             # Reference is C0, unit is Hz
         tonic_cent = hz_to_cent(tonichz, c0)[0]
         teoretical_cent = teoNoteCent[note_symbol]
 
