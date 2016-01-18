@@ -58,7 +58,7 @@ class NoteModel:
             for i in note_dict.keys():
                 if int(note_dict[i]["Value"]) == temp:
                     note = u''.join(note_dict[i]["theoretical_name"]).encode('utf-8').strip()
-                    performedNotes[i] = {"interval": {"Value": stable_pitches_cent[index]-tonic_cent, "Unit": "cent"},
+                    performedNotes[i] = {"interval": {"Value": stable_pitches_cent_norm[index]-(tonic_cent*ratio), "Unit": "cent"},
                                          "stablepitch": {"Value": stable_pitches[index], "Unit": "Hz"},
                                          "Symbol": i,
                                          "traditional_name": note}
