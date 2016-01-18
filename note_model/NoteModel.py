@@ -44,11 +44,12 @@ class NoteModel:
 
         return self.performedNotes
 
-pitch = json.load(open("/home/miracatici/PycharmProjects/note_model/sample_data/1-04_ussak_taksim.json", 'r'))['pitch']
+pitch = json.load(open("sample_data/1-04_ussak_taksim.json", 'r'))['pitch']
 tonic_identifier = TonicLastNote()
 tonic, pitch, pitch_chunks, distribution, sp = tonic_identifier.identify(pitch)
 tonicHz = tonic["value"]
-recDatas = mmb.getAudioMetadata("/home/miracatici/PycharmProjects/note_model/sample_data/1-04_ussak_taksim.json")
+recDatas = mmb.getAudioMetadata("sample_data/1-04_ussak_taksim.json")
+print recDatas
 recMakam = recDatas["makam"][0]["mb_tag"]
 print recMakam
 nm = NoteModel(distribution, tonicHz, recMakam)
