@@ -2,7 +2,7 @@
 
 from setuptools import setup
 
-setup(name='makamnotemodel',
+setup(name='note_model',
       version='0.1',
       description='An Automatic Note Modelling Method for Turkish Makam Music Recordings',
       author='Bilge Mirac Atici',
