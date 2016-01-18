@@ -4,10 +4,12 @@ import json
 import os
 from tonic_identifier.PitchDistribution import hz_to_cent
 from tonic_identifier.tonic_identifier import TonicLastNote
+import numpy as np
 
+import matplotlib.pyplot as plt
+import matplotlib.ticker
 
 class NoteModel:
-
     def __init__(self):
         pass
 
@@ -58,10 +60,51 @@ class NoteModel:
             for i in note_dict.keys():
                 if int(note_dict[i]["Value"]) == temp:
                     note = u''.join(note_dict[i]["theoretical_name"]).encode('utf-8').strip()
-                    performedNotes[i] = {"interval": {"Value": stable_pitches_cent_norm[index]-(tonic_cent*ratio), "Unit": "cent"},
-                                         "stablepitch": {"Value": stable_pitches[index], "Unit": "Hz"},
-                                         "Symbol": i,
+                    performedNotes[i] = {"interval": {"value": stable_pitches_cent_norm[index]-(tonic_cent*ratio), "unit": "cent"},
+                                         "stablepitch": {"value": stable_pitches[index], "unit": "Hz"},
+                                         "symbol": i,
                                          "traditional_name": note}
         return performedNotes
 
+    @staticmethod
+    def plot(distribution, performedNotes):
+        fig, ax1 = plt.subplots(1)
+        plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0, hspace=0.4)
+
+        # plot title
+        ax1.set_title('Pitch Distribution')
+        ax1.set_xlabel('Frequency (Hz)')
+        ax1.set_ylabel('Frequency of occurrence')
+
+        # log scaling the x axis
+        ax1.set_xscale('log', basex=2, nonposx='clip')
+        ax1.xaxis.set_major_formatter(matplotlib.ticker.FormatStrFormatter('%d'))
+
+        # recording distribution
+        ax1.plot(distribution.bins, distribution.vals, label='SongHist', ls='-', c='b', lw='1.5')
+
+        # find tonic value, it will be drawn more prominently
+        intervals = np.array(
+            [abs(note['interval']['value']) for note in performedNotes.values()])
+        if not len(np.where(intervals > 0.1)) == 1: # fuzzy 0 matching
+            print 'Tonic is not present in stable pitches!'
+        else:
+            tonicInterval = np.min(intervals)
+
+        # plot stable pitches
+        for note in performedNotes.values():
+            # find the value of the peak
+            dists = np.array([abs(note['stablepitch']['value'] - bin) for bin in distribution.bins])
+            peakind = np.argmin(dists)
+            peakval = distribution.vals[peakind]
+
+            # plot
+            if note['interval']['value'] == tonicInterval:
+                ax1.plot(note['stablepitch']['value'], peakval, 'cD', ms=10)
+            else:
+                ax1.plot(note['stablepitch']['value'], peakval, 'cD', ms=6, c='r')
+            ax1.text(note['stablepitch']['value'], peakval, note['symbol'], style='italic', 
+                horizontalalignment='center', verticalalignment='bottom')
+
+        plt.show()
 
