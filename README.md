@@ -25,8 +25,21 @@ noteModel.calculate_notes(distribution, tonichz, makam)
 
 Installation
 ============
+If you want to install the repository, it is recommended to install the package and dependencies into a virtualenv. In the terminal, do the following:
 
+    virtualenv env
+    source env/bin/activate
+    python setup.py install
+
+If you want to be able to edit files and have the changes be reflected, then install the repo like this instead
+
+    pip install -e .
+
+Then you can install the rest of the dependencies:
+
+    pip install -r requirements
+    
 Authors
 -------
-Bilge Miraç Atıcı	miracatici@gmail.com
+Bilge Miraç Atıcı	miracatici@gmail.com  
 Sertan Şentürk		contact@sertansenturk.com
