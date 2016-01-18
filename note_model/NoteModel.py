@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import os
 from tonic_identifier.PitchDistribution import hz_to_cent
 from tonic_identifier.tonic_identifier import TonicLastNote
 
@@ -15,11 +16,10 @@ class NoteModel:
 
     def calculate_notes(self):
 
-        """
-        :rtype: list
-        """
-        note_dict = json.load(open("data/note_dict.json", 'r'))
-        makam_extended = json.load(open("data/makam_extended.json", 'r'))
+        note_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'note_dict.json')
+        note_dict = json.load(open(note_file, 'r'))
+        makam_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'makam_extended.json')
+        makam_extended = json.load(open(makam_file, 'r'))
         note_symbol = makam_extended[self.makam]["karar_symbol"]
         tonic_cent = hz_to_cent(self.tonicHz, 8.17579892 * 2)[0]
         teoretical_cent = int(note_dict[note_symbol][0])
