@@ -9,65 +9,79 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker
 
+
 class NoteModel:
     def __init__(self):
         pass
 
     @staticmethod
-    def calculate_notes(distribution, tonichz, makam):
-        '''
-        Identify the names of performed notes from histogram peaks (stable pitches).
-        '''
-
+    def calculate_notes(distribution, tonichz, makam, threshold=50):
+        """
+        Identifies the names of the performed notes from histogram peaks (stable pitches).
+        """
         # Reading dictionary which contains note symbol, theoretical names and their cent values
         note_file = os.path.join(os.path.dirname(os.path.abspath("note_dict.json")),
-                                 'note_model/data', 'note_dict.json')           #os-independet path
+                                 'note_model/data', 'note_dict.json')  # os-independent path
         note_dict = json.load(open(note_file, 'r'))
 
         # Reading dictionary which contains theoretical information about each makam
         makam_file = os.path.join(os.path.dirname(os.path.abspath("makam_extended.json")),
-                                 'note_model/data', 'makam_extended.json')      #os-independet path
+                                  'note_model/data', 'makam_extended.json')  # os-independent path
         makam_extended = json.load(open(makam_file, 'r'))
 
         # Reading value from note_dict.json file
-        teoNoteCent = {}                               # A dictionary for theoretical cent values of notes
+        notes_theo_cent = {}  # A dictionary for theoretical cent values of notes
         for key in note_dict.keys():
-            teoNoteCent[key] = (int(note_dict[key]["Value"]))
+            notes_theo_cent[key] = (int(note_dict[key]["Value"]))
 
-        # Defining tonic (karar) symbol from theoretical information
-        note_symbol = makam_extended[makam]["karar_symbol"]
+        # Defining tonic symbol from theoretical information
+        tonic_theo_symbol = makam_extended[makam]["karar_symbol"]
 
         # Conversion hertz to cent, both of performed and theoretical values
-        c0 = 16.35                                                             # Reference is C0, unit is Hz
-        tonic_cent = hz_to_cent(tonichz, c0)[0]
-        teoretical_cent = teoNoteCent[note_symbol]
+        c0 = 16.35  # Reference is C0, unit is Hz
+        tonic_perf_cent = hz_to_cent(tonichz, c0)[0]
+        tonic_theo_cent = notes_theo_cent[tonic_theo_symbol]
 
         # Normalize ratio which is between theory and performance
-        ratio = teoretical_cent / tonic_cent
+        ratio = tonic_theo_cent / tonic_perf_cent
 
         # Calculate stable pitches
         peaks = distribution.detect_peaks()
-        peakId = peaks[0]
-        stable_pitches = distribution.bins[peakId]
-        stable_pitches_cent = hz_to_cent(stable_pitches, c0)
+        peak_id = peaks[0]
+
+        stable_pitches_hz = distribution.bins[peak_id]
+
+        stable_pitches_cent = hz_to_cent(stable_pitches_hz, c0)
         stable_pitches_cent_norm = stable_pitches_cent * ratio
 
+        stable_pitches_cent_norm = sorted(stable_pitches_cent_norm)
+
         # Finding nearest theoretical values of each stable pitch, identify the name of this value and write to output
-        performedNotes = {}                            # Defining output (return) object
-        for index in range(len(stable_pitches_cent_norm)):
-            teoValue = teoNoteCent.values()[index]
-            temp = TonicLastNote.find_nearest(teoNoteCent.values(), stable_pitches_cent_norm[index])
-            for i in note_dict.keys():
-                if int(note_dict[i]["Value"]) == temp:
-                    note = u''.join(note_dict[i]["theoretical_name"]).encode('utf-8').strip()
-                    performedNotes[i] = {"interval": {"value": stable_pitches_cent_norm[index]-(tonic_cent*ratio), "unit": "cent"},
-                                         "stablepitch": {"value": stable_pitches[index], "unit": "Hz"},
-                                         "symbol": i,
-                                         "traditional_name": note}
-        return performedNotes
+        performed_notes = {}  # Defining output (return) object
+
+        for ind, pitch in enumerate(stable_pitches_cent_norm):
+            temp = TonicLastNote.find_nearest(notes_theo_cent.values(), pitch)
+
+            # print pitch, temp, ind, len(stable_pitches_cent_norm)
+            if pitch - threshold < temp < pitch + threshold:
+                # print pitch, temp, ind
+
+                for key in note_dict.keys():
+                    if int(note_dict[key]["Value"]) == temp:
+                        # print note_dict[key]["Value"], temp, "\n"
+                        note = u''.join(note_dict[key]["theoretical_name"]).encode('utf-8').strip()
+                        performed_notes[key] = {"interval": {"value": pitch - (tonic_perf_cent * ratio),
+                                                             "unit": "cent"},
+                                                "stablepitch": {"value": stable_pitches_hz[ind],
+                                                                "unit": "Hz"},
+                                                "symbol": key,
+                                                "traditional_name": note}
+                        break
+
+        return performed_notes
 
     @staticmethod
-    def plot(distribution, performedNotes):
+    def plot(distribution, performed_notes):
         fig, ax1 = plt.subplots(1)
         plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0, hspace=0.4)
 
@@ -85,26 +99,25 @@ class NoteModel:
 
         # find tonic value, it will be drawn more prominently
         intervals = np.array(
-            [abs(note['interval']['value']) for note in performedNotes.values()])
-        if not len(np.where(intervals > 0.1)) == 1: # fuzzy 0 matching
+                [abs(note['interval']['value']) for note in performed_notes.values()])
+        if not len(np.where(intervals > 0.1)) == 1:  # fuzzy 0 matching
             print 'Tonic is not present in stable pitches!'
         else:
-            tonicInterval = np.min(intervals)
+            tonic_interval = np.min(intervals)
 
         # plot stable pitches
-        for note in performedNotes.values():
+        for note in performed_notes.values():
             # find the value of the peak
             dists = np.array([abs(note['stablepitch']['value'] - bin) for bin in distribution.bins])
-            peakind = np.argmin(dists)
-            peakval = distribution.vals[peakind]
+            peak_ind = np.argmin(dists)
+            peak_val = distribution.vals[peak_ind]
 
             # plot
-            if note['interval']['value'] == tonicInterval:
-                ax1.plot(note['stablepitch']['value'], peakval, 'cD', ms=10)
+            if note['interval']['value'] == tonic_interval:
+                ax1.plot(note['stablepitch']['value'], peak_val, 'cD', ms=10)
             else:
-                ax1.plot(note['stablepitch']['value'], peakval, 'cD', ms=6, c='r')
-            ax1.text(note['stablepitch']['value'], peakval, note['symbol'], style='italic', 
-                horizontalalignment='center', verticalalignment='bottom')
+                ax1.plot(note['stablepitch']['value'], peak_val, 'cD', ms=6, c='r')
+            ax1.text(note['stablepitch']['value'], peak_val, note['symbol'], style='italic',
+                     horizontalalignment='center', verticalalignment='bottom')
 
         plt.show()
-
