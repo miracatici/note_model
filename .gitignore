@@ -5,3 +5,4 @@
 note_model.egg-info/
 *.pyc
 .DS_Store
+setup.py
