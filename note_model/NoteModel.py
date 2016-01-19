@@ -11,11 +11,10 @@ import matplotlib.ticker
 
 
 class NoteModel:
-    def __init__(self):
-        pass
+    def __init__(self, threshold=50):
+        self.threshold = threshold
 
-    @staticmethod
-    def calculate_notes(distribution, tonichz, makam, threshold=50):
+    def calculate_notes(self, distribution, tonichz, makam):
         """
         Identifies the names of the performed notes from histogram peaks (stable pitches).
         """
@@ -63,7 +62,7 @@ class NoteModel:
             temp = TonicLastNote.find_nearest(notes_theo_cent.values(), pitch)
 
             # print pitch, temp, ind, len(stable_pitches_cent_norm)
-            if pitch - threshold < temp < pitch + threshold:
+            if pitch - self.threshold < temp < pitch + self.threshold:
                 # print pitch, temp, ind
 
                 for key in note_dict.keys():
