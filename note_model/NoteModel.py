@@ -116,7 +116,8 @@ class NoteModel:
                 ax1.plot(note['stablepitch']['value'], peak_val, 'cD', ms=10)
             else:
                 ax1.plot(note['stablepitch']['value'], peak_val, 'cD', ms=6, c='r')
-            ax1.text(note['stablepitch']['value'], peak_val, note['symbol'], style='italic',
+            txt_y_val = peak_val + 0.03 * max(distribution.vals)  # lift the text a little bit
+            ax1.text(note['stablepitch']['value'], txt_y_val, note['symbol'], style='italic',
                      horizontalalignment='center', verticalalignment='bottom')
 
         plt.show()
