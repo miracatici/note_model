@@ -84,7 +84,7 @@ class NoteModel:
 
     @staticmethod
     def plot(distribution, performed_notes, theo_peaks):
-        fig, ax1 = plt.subplots(1)
+        fig, ax1 = plt.subplots(1, figsize=(14, 4))
         plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0, hspace=0.4)
 
         # plot title
