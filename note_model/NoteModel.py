@@ -3,6 +3,7 @@
 import json
 import os
 from tonic_identifier.PitchDistribution import hz_to_cent
+from tonic_identifier.PitchDistribution import cent_to_hz
 from tonic_identifier.tonic_identifier import TonicLastNote
 import numpy as np
 
@@ -53,18 +54,20 @@ class NoteModel:
         stable_pitches_cent = hz_to_cent(stable_pitches_hz, c0)
         stable_pitches_cent_norm = stable_pitches_cent * ratio
 
-        stable_pitches_cent_norm = sorted(stable_pitches_cent_norm)
-
         # Finding nearest theoretical values of each stable pitch, identify the name of this value and write to output
         performed_notes = {}  # Defining output (return) object
 
+        theo_peaks = []
         for ind, pitch in enumerate(stable_pitches_cent_norm):
             temp = TonicLastNote.find_nearest(notes_theo_cent.values(), pitch)
 
             # print pitch, temp, ind, len(stable_pitches_cent_norm)
             if pitch - self.threshold < temp < pitch + self.threshold:
+
+                theo_peaks.append([cent_to_hz(temp/ratio, c0), peaks[1][ind]])
                 # print pitch, temp, ind
 
+                # print theo_peaks
                 for key in note_dict.keys():
                     if int(note_dict[key]["Value"]) == temp:
                         # print note_dict[key]["Value"], temp, "\n"
@@ -77,10 +80,10 @@ class NoteModel:
                                                 "traditional_name": note}
                         break
 
-        return performed_notes
+        return performed_notes, theo_peaks
 
     @staticmethod
-    def plot(distribution, performed_notes):
+    def plot(distribution, performed_notes, theo_peaks):
         fig, ax1 = plt.subplots(1)
         plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0, hspace=0.4)
 
@@ -105,11 +108,13 @@ class NoteModel:
             tonic_interval = np.min(intervals)
 
         # plot stable pitches
-        for note in performed_notes.values():
+        for ind, note in enumerate(performed_notes.values()):
             # find the value of the peak
             dists = np.array([abs(note['stablepitch']['value'] - bin) for bin in distribution.bins])
             peak_ind = np.argmin(dists)
             peak_val = distribution.vals[peak_ind]
+
+            ax1.vlines(x=theo_peaks[ind][0], ymin=0, ymax=theo_peaks[ind][1], linestyles='dashed')
 
             # plot
             if note['interval']['value'] == tonic_interval:
