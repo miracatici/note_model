@@ -2,9 +2,9 @@
 
 import json
 import os
-from tonic_identifier.PitchDistribution import hz_to_cent
-from tonic_identifier.PitchDistribution import cent_to_hz
-from tonic_identifier.tonic_identifier import TonicLastNote
+from tonicidentifier.PitchDistribution import hz_to_cent
+from tonicidentifier.PitchDistribution import cent_to_hz
+from tonicidentifier.tonicidentifier import TonicLastNote
 import numpy as np
 
 import matplotlib.pyplot as plt
