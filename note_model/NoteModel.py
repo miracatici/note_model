@@ -84,20 +84,22 @@ class NoteModel:
 
     @staticmethod
     def plot(distribution, performed_notes, theo_peaks):
-        fig, ax1 = plt.subplots(1, figsize=(14, 4))
+        fig, ax = plt.subplots(1)
         plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=0, hspace=0.4)
 
         # plot title
-        ax1.set_title('Pitch Distribution')
-        ax1.set_xlabel('Frequency (Hz)')
-        ax1.set_ylabel('Frequency of occurrence')
+        ax.set_title('Pitch Distribution')
+        ax.set_xlabel('Frequency (Hz)')
+        ax.set_ylabel('Frequency of occurrence')
 
         # log scaling the x axis
-        ax1.set_xscale('log', basex=2, nonposx='clip')
-        ax1.xaxis.set_major_formatter(matplotlib.ticker.FormatStrFormatter('%d'))
+        ax.set_xscale('log', basex=2, nonposx='clip')
+        ax.xaxis.set_major_formatter(matplotlib.ticker.FormatStrFormatter('%d'))
+        ax.set_xlim([min(distribution.bins),max(distribution.bins)])
+        ax.set_xticks([note['stablepitch']['value'] for note in performed_notes.values()])
 
         # recording distribution
-        ax1.plot(distribution.bins, distribution.vals, label='SongHist', ls='-', c='b', lw='1.5')
+        ax.plot(distribution.bins, distribution.vals, label='SongHist', ls='-', c='b', lw='1.5')
 
         # find tonic value, it will be drawn more prominently
         intervals = np.array(
@@ -114,15 +116,16 @@ class NoteModel:
             peak_ind = np.argmin(dists)
             peak_val = distribution.vals[peak_ind]
 
-            ax1.vlines(x=theo_peaks[ind][0], ymin=0, ymax=theo_peaks[ind][1], linestyles='dashed')
+            # plot the theoretical frequency as a dashed line
+            ax.vlines(x=theo_peaks[ind][0], ymin=0, ymax=theo_peaks[ind][1], linestyles='dashed')
 
             # plot
             if note['interval']['value'] == tonic_interval:
-                ax1.plot(note['stablepitch']['value'], peak_val, 'cD', ms=10)
+                ax.plot(note['stablepitch']['value'], peak_val, 'cD', ms=10)
             else:
-                ax1.plot(note['stablepitch']['value'], peak_val, 'cD', ms=6, c='r')
-            txt_y_val = peak_val + 0.03 * max(distribution.vals)  # lift the text a little bit
-            ax1.text(note['stablepitch']['value'], txt_y_val, note['symbol'], style='italic',
-                     horizontalalignment='center', verticalalignment='bottom', rotation='vertical')
+                ax.plot(note['stablepitch']['value'], peak_val, 'cD', ms=6, c='r')
 
-        plt.show()
+            # print note name
+            txt_y_val = peak_val + 0.03 * max(distribution.vals)  # lift the text a little bit
+            ax.text(note['stablepitch']['value'], txt_y_val, note['symbol'], style='italic',
+                     horizontalalignment='center', verticalalignment='bottom', rotation='vertical')
