@@ -20,13 +20,13 @@ class NoteModel:
         Identifies the names of the performed notes from histogram peaks (stable pitches).
         """
         # Reading dictionary which contains note symbol, theoretical names and their cent values
-        note_file = os.path.join(os.path.dirname(os.path.abspath("note_dict.json")),
-                                 'note_model/data', 'note_dict.json')  # os-independent path
+        note_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                 'data', 'note_dict.json')  # os-independent path
         note_dict = json.load(open(note_file, 'r'))
 
         # Reading dictionary which contains theoretical information about each makam
-        makam_file = os.path.join(os.path.dirname(os.path.abspath("makam_extended.json")),
-                                  'note_model/data', 'makam_extended.json')  # os-independent path
+        makam_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                  'data', 'makam_extended.json')  # os-independent path
         makam_extended = json.load(open(makam_file, 'r'))
 
         # Reading value from note_dict.json file
