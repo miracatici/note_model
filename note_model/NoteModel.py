@@ -21,6 +21,11 @@ class NoteModel:
         """
         Identifies the names of the performed notes from histogram peaks (stable pitches).
         """
+        try:  # a dict is supplied, instantiate a distribution object
+            distribution = PitchDistribution(distribution['bins'], distribution['vals'])
+        except AttributeError:  
+            pass
+            
         # Reading dictionary which contains note symbol, theoretical names and their cent values
         note_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                  'data', 'note_dict.json')  # os-independent path
@@ -48,12 +53,7 @@ class NoteModel:
         ratio = tonic_theo_cent / tonic_perf_cent
 
         # Calculate stable pitches
-        try:
-            peaks = distribution.detect_peaks()
-        except AttributeError:  # a dict is supplied, instantiate a distribution object
-            distribution = PitchDistribution(distribution.bins, distribution.vals)
-            peaks = distribution.detect_peaks()
-        
+        peaks = distribution.detect_peaks()
         peak_id = peaks[0]
 
         stable_pitches_hz = distribution.bins[peak_id]
