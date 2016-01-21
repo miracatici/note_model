@@ -2,6 +2,7 @@
 
 import json
 import os
+from tonicidentifier import PitchDistribution.PitchDistribution
 from tonicidentifier.PitchDistribution import hz_to_cent
 from tonicidentifier.PitchDistribution import cent_to_hz
 from tonicidentifier.tonicidentifier import TonicLastNote
@@ -46,7 +47,12 @@ class NoteModel:
         ratio = tonic_theo_cent / tonic_perf_cent
 
         # Calculate stable pitches
-        peaks = distribution.detect_peaks()
+        try:
+            peaks = distribution.detect_peaks()
+        except AttributeError:  # a dict is supplied, instantiate a distribution object
+            distribution = PitchDistribution(distribution.bins, distribution.vals)
+            peaks = distribution.detect_peaks()
+        
         peak_id = peaks[0]
 
         stable_pitches_hz = distribution.bins[peak_id]
