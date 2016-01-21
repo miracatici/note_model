@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
-
 import json
 import os
-from tonicidentifier import PitchDistribution.PitchDistribution
+
+from tonicidentifier.PitchDistribution import PitchDistribution
 from tonicidentifier.PitchDistribution import hz_to_cent
 from tonicidentifier.PitchDistribution import cent_to_hz
+
 from tonicidentifier.tonicidentifier import TonicLastNote
+
 import numpy as np
 
 import matplotlib.pyplot as plt
 import matplotlib.ticker
-
 
 class NoteModel:
     def __init__(self, threshold=50):
