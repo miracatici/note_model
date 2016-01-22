@@ -3,9 +3,7 @@ note_model
 
 Introduction
 ------------
-Repository for note modelling from pitch distribution peaks. Stable pitches which are extracted from pitch distribution 
-are converted to cent value and normalized to theoretical tonic value which is identified from makam name. For each stable
-pitches, nearest theoretical value is selected and its theoretical name is selected for output. 
+This repository contains tools to compute note models from audio pitch distribution analysis. Stable pitches which are extracted from pitch distribution ([here](https://github.com/hsercanatli/tonicidentifier_makam/blob/master/tonicidentifier/PitchDistribution.py)) are converted to cent value and normalized (transposed) to theoretical tonic value which is identified from makam name. For each stable pitches, nearest theoretical value is selected and its theoretical name is selected for output. 
 
 Usage
 =====
@@ -15,13 +13,18 @@ from note_model.NoteModel import NoteModel
 noteModel = NoteModel()
 
 '''
-distribution = PitchDistribution object
+distribution = PitchDistribution object (Please read the link above)
 tonichz = Tonic frequency of recording in Hz
 makam = Makam name of recording
 '''
 
 noteModel.calculate_notes(distribution, tonichz, makam)
 ```
+
+Demo
+====
+Please refer to [this page](https://github.com/miracatici/note_model/blob/master/demo.ipynb) for an interactive demo.
+
 
 Installation
 ============
