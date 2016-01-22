@@ -8,17 +8,35 @@ This repository contains tools to compute note models from audio pitch distribut
 Usage
 =====
 ```python
-from note_model.NoteModel import NoteModel
 
-noteModel = NoteModel()
-
-'''
-distribution = PitchDistribution object (Please read the link above)
-tonichz = Tonic frequency of recording in Hz
-makam = Makam name of recording
-'''
-
-noteModel.calculate_notes(distribution, tonichz, makam)
+    import json
+    
+    from pitchfilter.pitchfilter import PitchPostFilter
+    from tonicidentifier.tonicidentifier import TonicLastNote
+    from note_model.NoteModel import NoteModel
+    
+    '''
+    distribution = PitchDistribution object (Code is linked above)
+    tonichz = Tonic frequency of recording in Hz
+    makam = Makam name of recording
+    '''
+    
+    # inputs; pitch track and makam of the recording
+    rec_makam = "nihavent"  
+    pitch = json.load(open("sample_data/feda89e3-a50d-4ff8-87d4-c1e531cc1233.json", 'r'))['pitch']
+    
+    # Extra: Postprocess the pitch track to get rid of spurious pitch estimations and correct octave errors
+    flt = PitchPostFilter()    # Code is here: https://github.com/hsercanatli/pitch-post-filter
+    pitch = flt.run(pitch)
+    
+    # run tonic identification using last note detection
+    tonic_identifier = TonicLastNote()    # Code is here https://github.com/hsercanatli/tonicidentifier_makam
+    tonic, pitch, pitch_chunks, distribution, sp = tonic_identifier.identify(pitch)
+    tonic_hz = tonic["value"]
+    
+    # Obtain the the stable notes
+    model = NoteModel()
+    stablenotes, theo_peaks = model.calculate_notes(distribution, tonic_hz, rec_makam)
 ```
 
 Demo
