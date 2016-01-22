@@ -6,7 +6,7 @@ In order to use the scrip, the links below may be usefull.
 
 Pitch Distribution: [this page](https://github.com/hsercanatli/tonicidentifier_makam/blob/master/tonicidentifier/PitchDistribution.py)
 PitchPostFiler: [this page](https://github.com/hsercanatli/pitch-post-filter)
-Tonic Identifier: [this page](here https://github.com/hsercanatli/tonicidentifier_makam)
+Tonic Identifier: [this page](https://github.com/hsercanatli/tonicidentifier_makam)
 
 Usage
 -----
