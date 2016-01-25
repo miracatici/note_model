@@ -1,5 +1,6 @@
 note_model
 ==========
+Tools to compute note models from audio pitch distribution analysis
 
 Introduction
 ------------
