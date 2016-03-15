@@ -14,7 +14,7 @@ Usage
     
     from pitchfilter.PitchFilter import PitchFilter
     from tonicidentifier.TonicLastNote import TonicLastNote
-    from note_model.NoteModel import NoteModel
+    from notemodel.NoteModel import NoteModel
     
     '''
     pitch = a n x 3 matrix of pitch values, where rows indicate time, pitch and confidence
