@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name='note_model',
-    version='0.1',
+    version='1.1',
     description='An Automatic Note Modelling Method for Turkish Makam Music Recordings',
     author='Bilge Mirac Atici',
     author_email='miracatici AT gmail DOT com',
