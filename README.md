@@ -12,8 +12,8 @@ Usage
 
     import json
     
-    from pitchfilter.pitchfilter import PitchPostFilter
-    from tonicidentifier.tonicidentifier import TonicLastNote
+    from pitchfilter.PitchFilter import PitchFilter
+    from tonicidentifier.TonicLastNote import TonicLastNote
     from note_model.NoteModel import NoteModel
     
     '''
@@ -27,7 +27,7 @@ Usage
     pitch = json.load(open("sample_data/feda89e3-a50d-4ff8-87d4-c1e531cc1233.json", 'r'))['pitch']
     
     # Extra: Postprocess the pitch track to get rid of spurious pitch estimations and correct octave errors
-    flt = PitchPostFilter()    # Code is here: https://github.com/hsercanatli/pitch-post-filter
+    flt = PitchFilter()    # Code is here: https://github.com/hsercanatli/pitch-post-filter
     pitch = flt.run(pitch)
     
     # run tonic identification using last note detection
