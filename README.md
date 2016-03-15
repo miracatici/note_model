@@ -1,4 +1,4 @@
-note_model
+notemodel
 ==========
 Tools to compute note models from audio pitch distribution analysis
 
