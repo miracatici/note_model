@@ -4,7 +4,7 @@ Tools to compute note models from audio pitch distribution analysis
 
 Introduction
 ------------
-This repository contains tools to compute note models from audio pitch distribution analysis. Stable pitches which are extracted from pitch distribution ([here](https://github.com/hsercanatli/tonicidentifier_makam/blob/master/tonicidentifier/PitchDistribution.py)) are converted to cent value and normalized (transposed) to theoretical tonic value which is identified from makam name. For each stable pitches, nearest theoretical value is selected and its theoretical name is selected for output. 
+This repository contains tools to compute note models from audio pitch distribution analysis. Stable pitches which are extracted from pitch distribution are converted to cent value and normalized (transposed) to theoretical tonic value which is identified from makam name. For each stable pitches, nearest theoretical value is selected and its theoretical name is selected for output. 
 
 Usage
 ------
