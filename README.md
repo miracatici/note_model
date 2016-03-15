@@ -17,19 +17,20 @@ Usage
     from note_model.NoteModel import NoteModel
     
     '''
-    distribution = PitchDistribution object (Code is linked above)
+    pitch = a n x 3 matrix of pitch values, where rows indicate time, pitch and confidence
     tonichz = Tonic frequency of recording in Hz
     makam = Makam name of recording
     '''
     
     # inputs; pitch track and makam of the recording
-    rec_makam = "nihavent"  
-    pitch = json.load(open("sample_data/feda89e3-a50d-4ff8-87d4-c1e531cc1233.json", 'r'))['pitch']
+    rec_makam = "huseyni"
+    pitch_file = 'huseyni--sazsemaisi--aksaksemai----tatyos_efendi/8b8d697b-cad9-446e-ad19-5e85a36aa253.json'
+    pitch = json.load(open(pitch_file, 'r'))['pitch']
     
     # Extra: Postprocess the pitch track to get rid of spurious pitch estimations and correct octave errors
     flt = PitchFilter()    # Code is here: https://github.com/hsercanatli/pitch-post-filter
     pitch = flt.run(pitch)
-    
+
     # run tonic identification using last note detection
     tonic_identifier = TonicLastNote()    # Code is here https://github.com/hsercanatli/tonicidentifier_makam
     tonic, pitch, pitch_chunks, distribution, sp = tonic_identifier.identify(pitch)
