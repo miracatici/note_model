@@ -23,9 +23,9 @@ class NoteModel:
         try:  # a dict is supplied, instantiate a distribution object
             distribution = PitchDistribution(distribution['bins'],
                                              distribution['vals'])
-        except AttributeError:  
+        except AttributeError:
             pass
-            
+
         theoretical_intervals = self._get_theoretical_intervals_to_search(
             makam)
 
@@ -42,7 +42,7 @@ class NoteModel:
                                                       stable_pitches_hz):
             note_cent = TonicLastNote.find_nearest(
                 theoretical_intervals.values(), stable_pitch_cent)
-            
+
             if abs(stable_pitch_cent - note_cent) < self.pitch_threshold:
                 for key, val in theoretical_intervals.iteritems():
                     if val == note_cent:
@@ -57,7 +57,7 @@ class NoteModel:
                             "stable_pitch": {"value": stable_pitch_hz,
                                              "unit": "Hz"}}
                         break
-                
+
         return stable_notes
 
     @staticmethod
@@ -142,8 +142,8 @@ class NoteModel:
         tonic_symbol = makam_extended[makam]["karar_symbol"]
         theoretical_intervals = {}
         for key, note in note_dict.iteritems():
-            theoretical_intervals[key] = note['Value'] - \
-                                         note_dict[tonic_symbol]['Value']
+            theoretical_intervals[key] = (note['Value'] -
+                                          note_dict[tonic_symbol]['Value'])
 
         return theoretical_intervals
 
@@ -194,6 +194,6 @@ class NoteModel:
             # text a little bit
             ax.text(note['stable_pitch']['value'], txt_y_val, note_symbol,
                     style='italic', verticalalignment='bottom', rotation=60)
-            
+
         # define ylim higher than the highest peak so the note names have space
-        plt.ylim([0, 1.2*max(distribution.vals)])
+        plt.ylim([0, 1.2 * max(distribution.vals)])
