@@ -43,7 +43,7 @@ Usage
 
 Demo
 ------------
-Please refer to [this page](https://github.com/miracatici/note_model/blob/master/demo.ipynb) for an interactive demo.
+Please refer to [demo.ipynb](https://github.com/miracatici/note_model/blob/master/demo.ipynb) for an interactive demo.
 
 
 Installation
