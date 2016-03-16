@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import os
-from modetonicestimation.PitchDistribution import PitchDistribution
-from modetonicestimation.ModeFunctions import hz_to_cent, cent_to_hz
+from modetonicestimation.Converter import Converter
 from tonicidentifier.TonicLastNote import TonicLastNote
 import numpy as np
 import matplotlib.pyplot as plt
@@ -20,20 +19,19 @@ class NoteModel(object):
         Identifies the names of the performed notes from histogram peaks
         (stable pitches).
         """
-        try:  # a dict is supplied, instantiate a distribution object
-            distribution = PitchDistribution(distribution['bins'],
-                                             distribution['vals'])
-        except AttributeError:
-            pass
-
         theoretical_intervals = self._get_theoretical_intervals_to_search(
             makam)
+
+        try:  # convert the bins to hz, if they are given in cents
+            distribution.cent_to_hz()
+        except ValueError:
+            pass
 
         # Calculate stable pitches
         peak_idx, peak_heights = distribution.detect_peaks()
 
         stable_pitches_hz = distribution.bins[peak_idx]
-        stable_pitches_cent = hz_to_cent(stable_pitches_hz, tonic_hz)
+        stable_pitches_cent = Converter.hz_to_cent(stable_pitches_hz, tonic_hz)
 
         # Finding nearest theoretical values of each stable pitch, identify the
         # name of this value and write to output
@@ -46,7 +44,8 @@ class NoteModel(object):
             if abs(stable_pitch_cent - note_cent) < self.pitch_threshold:
                 for key, val in theoretical_intervals.iteritems():
                     if val == note_cent:
-                        theoretical_pitch = cent_to_hz(note_cent, tonic_hz)
+                        theoretical_pitch = Converter.cent_to_hz(
+                            note_cent, tonic_hz)
                         stable_notes[key] = {
                             "performed_interval": {"value": stable_pitch_cent,
                                                    "unit": "cent"},
