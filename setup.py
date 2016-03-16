@@ -10,6 +10,7 @@ setup(name='notemodel',
     license='agpl 3.0',
     url='https://github.com/miracatici/notemodel.git',
     packages=['notemodel'],
+    include_package_data=True,
     install_requires=[
         "numpy",
         "matplotlib",
