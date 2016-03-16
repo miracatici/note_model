@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker
 
 
-class NoteModel:
+class NoteModel(object):
     note_letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
 
     def __init__(self, pitch_threshold=50):
