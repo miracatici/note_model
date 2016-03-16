@@ -15,11 +15,12 @@ Usage
     from pitchfilter.PitchFilter import PitchFilter
     from tonicidentifier.TonicLastNote import TonicLastNote
     from notemodel.NoteModel import NoteModel
+    from modetonicestimation.PitchDistribution import PitchDistribution
     
     '''
     pitch = a n x 3 matrix of pitch values, where rows indicate time, pitch and confidence
     tonichz = Tonic frequency of recording in Hz
-    makam = Makam name of recording
+    rec_makam = Makam name of recording
     '''
     
     # inputs; pitch track and makam of the recording
@@ -33,12 +34,20 @@ Usage
 
     # run tonic identification using last note detection
     tonic_identifier = TonicLastNote()    # Code is here https://github.com/hsercanatli/tonicidentifier_makam
-    tonic, pitch, pitch_chunks, distribution, sp = tonic_identifier.identify(pitch)
+    tonic = tonic_identifier.identify(pitch)[0]  # don't use the distribution output from here, it is only
+    # computed from the end of the recording
     tonic_hz = tonic["value"]
+    
+    # compute the pitch distribution
+    pitch_distribution = PitchDistribution.from_hz_pitch(pitch[:,1], ref_freq=tonic['value'])
     
     # Obtain the the stable notes
     model = NoteModel()
-    stablenotes, theo_peaks = model.calculate_notes(distribution, tonic_hz, rec_makam)
+    stablenotes, theo_peaks = model.calculate_notes(pitch_distribution, tonic_hz, rec_makam)
+
+    # plot the result
+    model.plot(pitch_distribution, stablenotes)
+    pylab.show()
 ```
 
 Demo
