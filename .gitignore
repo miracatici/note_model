@@ -2,7 +2,9 @@
 .ipynb_checkpoints
 *.mp3
 *.wav
-note_model.egg-info/
+*.egg-info/
 *.pyc
 .DS_Store
 test.py
+build/
+dist/
