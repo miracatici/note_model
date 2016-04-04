@@ -157,8 +157,10 @@ class NoteModel(object):
 
         # copy the pitch distribution
         pd_copy = deepcopy(pitch_distribution)
-        if pd_copy.bin_unit == 'cent':
+        try:  # convert the bins to hz, if they are given in cents
             pd_copy.cent_to_hz()
+        except ValueError:
+            pass
 
         # plot title
         ax.set_title('Pitch Distribution')
