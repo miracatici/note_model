@@ -6,6 +6,7 @@ from tonicidentifier.TonicLastNote import TonicLastNote
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker
+from copy import deepcopy
 
 
 class NoteModel(object):
@@ -14,23 +15,25 @@ class NoteModel(object):
     def __init__(self, pitch_threshold=50):
         self.pitch_threshold = pitch_threshold
 
-    def calculate_notes(self, distribution, tonic_hz, makam):
+    def calculate_notes(self, pitch_distribution, tonic_hz, makam):
         """
         Identifies the names of the performed notes from histogram peaks
         (stable pitches).
         """
+        pd_copy = deepcopy(pitch_distribution)
+
         theoretical_intervals = self._get_theoretical_intervals_to_search(
             makam)
 
         try:  # convert the bins to hz, if they are given in cents
-            distribution.cent_to_hz()
+            pd_copy.cent_to_hz()
         except ValueError:
             pass
 
         # Calculate stable pitches
-        peak_idx, peak_heights = distribution.detect_peaks()
+        peak_idx, peak_heights = pd_copy.detect_peaks()
 
-        stable_pitches_hz = distribution.bins[peak_idx]
+        stable_pitches_hz = pd_copy.bins[peak_idx]
         stable_pitches_cent = Converter.hz_to_cent(stable_pitches_hz, tonic_hz)
 
         # Finding nearest theoretical values of each stable pitch, identify the
@@ -147,10 +150,15 @@ class NoteModel(object):
         return theoretical_intervals
 
     @staticmethod
-    def plot(distribution, stable_notes):
+    def plot(pitch_distribution, stable_notes):
         fig, ax = plt.subplots(1)
         plt.subplots_adjust(left=None, bottom=None, right=None, top=None,
                             wspace=0, hspace=0.4)
+
+        # copy the pitch distribution
+        pd_copy = deepcopy(pitch_distribution)
+        if pd_copy.bin_unit == 'cent':
+            pd_copy.cent_to_hz()
 
         # plot title
         ax.set_title('Pitch Distribution')
@@ -161,21 +169,21 @@ class NoteModel(object):
         ax.set_xscale('log', basex=2, nonposx='clip')
         ax.xaxis.set_major_formatter(
             matplotlib.ticker.FormatStrFormatter('%d'))
-        ax.set_xlim([min(distribution.bins), max(distribution.bins)])
+        ax.set_xlim([min(pd_copy.bins), max(pd_copy.bins)])
         ax.set_xticks([note['stable_pitch']['value']
                        for note in stable_notes.values()])
 
         # recording distribution
-        ax.plot(distribution.bins, distribution.vals,
+        ax.plot(pd_copy.bins, pd_copy.vals,
                 label='SongHist', ls='-', c='b', lw='1.5')
 
         # plot stable pitches
         for note_symbol, note in stable_notes.iteritems():
             # find the value of the peak
             dists = np.array([abs(note['stable_pitch']['value'] - dist_bin)
-                              for dist_bin in distribution.bins])
+                              for dist_bin in pd_copy.bins])
             peak_ind = np.argmin(dists)
-            peak_val = distribution.vals[peak_ind]
+            peak_val = pd_copy.vals[peak_ind]
 
             # plot the theoretical frequency as a dashed line
             ax.vlines(x=note['theoretical_pitch']['value'], ymin=0,
@@ -189,10 +197,10 @@ class NoteModel(object):
                         c='r')
 
             # print note name
-            txt_y_val = peak_val + 0.03 * max(distribution.vals)  # lift the
+            txt_y_val = peak_val + 0.03 * max(pd_copy.vals)  # lift the
             # text a little bit
             ax.text(note['stable_pitch']['value'], txt_y_val, note_symbol,
                     style='italic', verticalalignment='bottom', rotation=60)
 
         # define ylim higher than the highest peak so the note names have space
-        plt.ylim([0, 1.2 * max(distribution.vals)])
+        plt.ylim([0, 1.2 * max(pd_copy.vals)])
