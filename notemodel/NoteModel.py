@@ -86,7 +86,11 @@ class NoteModel(object):
         makam_extended = json.load(open(makam_file, 'r'))
 
         # get the key signature
-        key_signature = makam_extended[makam]["key_signature"]
+        try:
+            key_signature = makam_extended[makam]["key_signature"]
+        except KeyError:
+            raise KeyError('Unknown makam')
+
         for note in note_dict.keys():  # extend the key signature to octaves
             if len(note) > 2 and note not in key_signature and \
                     any([self._is_same_pitch_class(note, ks)
