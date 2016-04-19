@@ -34,8 +34,14 @@ class NoteModel(object):
         peak_idx, peak_heights = pd_copy.detect_peaks()
 
         stable_pitches_hz = pd_copy.bins[peak_idx]
-        stable_pitches_cent = Converter.hz_to_cent(stable_pitches_hz, tonic_hz)
+        stable_notes = self._stable_pitches_to_notes(
+            stable_pitches_hz, theoretical_intervals, tonic_hz)
 
+        return stable_notes
+
+    def _stable_pitches_to_notes(self, stable_pitches_hz,
+                                 theoretical_intervals, tonic_hz):
+        stable_pitches_cent = Converter.hz_to_cent(stable_pitches_hz, tonic_hz)
         # Finding nearest theoretical values of each stable pitch, identify the
         # name of this value and write to output
         stable_notes = {}  # Defining output (return) object
@@ -59,7 +65,6 @@ class NoteModel(object):
                             "stable_pitch": {"value": stable_pitch_hz,
                                              "unit": "Hz"}}
                         break
-
         return stable_notes
 
     @staticmethod
@@ -83,25 +88,15 @@ class NoteModel(object):
         # makam
         makam_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                   'data', 'makam_extended.json')
-        makam_extended = json.load(open(makam_file, 'r'))
+        makam_dict = json.load(open(makam_file, 'r'))
 
         # get the key signature
         try:
-            key_signature = makam_extended[makam]["key_signature"]
+            key_signature = self._get_extended_key_signature(
+                makam_dict[makam]["key_signature"], note_dict)
         except KeyError:
             raise KeyError('Unknown makam')
-
-        for note in note_dict.keys():  # extend the key signature to octaves
-            if len(note) > 2 and note not in key_signature and \
-                    any([self._is_same_pitch_class(note, ks)
-                         for ks in key_signature]):
-                key_signature.append(note)
-
-        close_natural_notes = self._get_close_natural_notes(key_signature)
-
-        # get the natural notes that are not close to the key signature
-        natural_notes = [n for n in note_dict.keys() if len(n) == 2 and n
-                         not in close_natural_notes]
+        natural_notes = self._get_natural_notes(key_signature, note_dict)
 
         # Remove the notes neighboring the scale notes
         keep_notes = natural_notes + key_signature
@@ -145,13 +140,30 @@ class NoteModel(object):
                     raise ValueError('Unhandled comma in ' + note_name)
 
         # recompute the cent values according to the tonic
-        tonic_symbol = makam_extended[makam]["karar_symbol"]
+        tonic_symbol = makam_dict[makam]["karar_symbol"]
         theoretical_intervals = {}
         for key, note in note_dict.iteritems():
             theoretical_intervals[key] = (note['Value'] -
                                           note_dict[tonic_symbol]['Value'])
 
         return theoretical_intervals
+
+    def _get_natural_notes(self, key_signature, note_dict):
+        close_natural_notes = self._get_close_natural_notes(key_signature)
+        # get the natural notes that are not close to the key signature
+        natural_notes = [n for n in note_dict.keys() if len(n) == 2 and n
+                         not in close_natural_notes]
+        return natural_notes
+
+    def _get_extended_key_signature(self, key_sig_in, note_dict):
+        key_signature = deepcopy(key_sig_in)
+        for note in note_dict.keys():  # extend the key signature to octaves
+            if len(note) > 2 and note not in key_signature and \
+                    any([self._is_same_pitch_class(note, ks)
+                         for ks in key_signature]):
+                key_signature.append(note)
+
+        return key_signature
 
     @staticmethod
     def plot(pitch_distribution, stable_notes):
@@ -184,6 +196,12 @@ class NoteModel(object):
                 label='SongHist', ls='-', c='b', lw='1.5')
 
         # plot stable pitches
+        NoteModel._plot_stable_pitches(ax, pd_copy, stable_notes)
+        # define ylim higher than the highest peak so the note names have space
+        plt.ylim([0, 1.2 * max(pd_copy.vals)])
+
+    @staticmethod
+    def _plot_stable_pitches(ax, pd_copy, stable_notes):
         for note_symbol, note in stable_notes.iteritems():
             # find the value of the peak
             dists = np.array([abs(note['stable_pitch']['value'] - dist_bin)
@@ -207,6 +225,3 @@ class NoteModel(object):
             # text a little bit
             ax.text(note['stable_pitch']['value'], txt_y_val, note_symbol,
                     style='italic', verticalalignment='bottom', rotation=60)
-
-        # define ylim higher than the highest peak so the note names have space
-        plt.ylim([0, 1.2 * max(pd_copy.vals)])
