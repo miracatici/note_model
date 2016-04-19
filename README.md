@@ -12,10 +12,10 @@ Usage
 
     import json
     
-    from pitchfilter.PitchFilter import PitchFilter
-    from tonicidentifier.TonicLastNote import TonicLastNote
-    from notemodel.NoteModel import NoteModel
-    from modetonicestimation.PitchDistribution import PitchDistribution
+    from pitchfilter.pitchfilter import PitchFilter
+    from tonicidentifier.toniclastnote import TonicLastNote
+    from notemodel.notemodel import NoteModel
+    from modetonicestimation.pitchdistribution import PitchDistribution
     
     '''
     pitch = a n x 3 matrix of pitch values, where rows indicate time, pitch and confidence

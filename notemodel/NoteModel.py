@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import json
 import os
-from modetonicestimation.Converter import Converter
-from tonicidentifier.TonicLastNote import TonicLastNote
+from morty.Converter import Converter
+from tonicidentifier.toniclastnote import TonicLastNote
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker
