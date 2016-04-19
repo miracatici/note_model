@@ -158,12 +158,11 @@ class NoteModel(object):
     def _get_extended_key_signature(self, key_sig_in, note_dict):
         key_signature = deepcopy(key_sig_in)
         for note in note_dict.keys():  # extend the key signature to octaves
-            if len(note) > 2 and note not in key_signature and \
-                    any([self._is_same_pitch_class(note, ks)
-                         for ks in key_signature]):
+            if any([self._is_same_pitch_class(note, ks)
+                    for ks in key_signature]):
                 key_signature.append(note)
 
-        return key_signature
+        return list(set(key_signature))
 
     @staticmethod
     def plot(pitch_distribution, stable_notes):
