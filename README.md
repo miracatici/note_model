@@ -51,6 +51,8 @@ Usage
     pylab.show()
 ```
 
+![image](https://cloud.githubusercontent.com/assets/4540641/17845456/38d42f22-6842-11e6-8e48-6f66b0513c50.png)
+
 Demo
 ------------
 Please refer to [demo.ipynb](https://github.com/miracatici/note_model/blob/master/demo.ipynb) for an interactive demo.
