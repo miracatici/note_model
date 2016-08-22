@@ -1,5 +1,6 @@
 #### notemodel v1.2.1
  - Updated the PitchDistribution requirement (morty)
+ - Added the optional min_peak_ratio parameter
 
 #### notemodel v1.2
  - Improved PitchDistribution handling and pitch conversions
