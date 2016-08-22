@@ -33,7 +33,7 @@ Usage
     pitch = flt.run(pitch)
 
     # run tonic identification using last note detection
-    tonic_identifier = TonicLastNote()    # Code is here https://github.com/hsercanatli/tonicidentifier_makam
+    tonic_identifier = TonicLastNote()    # The code is here: https://github.com/hsercanatli/tonicidentifier_makam
     tonic = tonic_identifier.identify(pitch)[0]  # don't use the distribution output from here, it is only
     # computed from the end of the recording
     tonic_hz = tonic["value"]
