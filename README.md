@@ -29,7 +29,7 @@ Usage
     pitch = json.load(open(pitch_file, 'r'))['pitch']
     
     # Extra: Postprocess the pitch track to get rid of spurious pitch estimations and correct octave errors
-    flt = PitchFilter()    # Code is here: https://github.com/hsercanatli/pitch-post-filter
+    flt = PitchFilter()    # The code is here: https://github.com/hsercanatli/pitch-post-filter
     pitch = flt.run(pitch)
 
     # run tonic identification using last note detection
@@ -43,7 +43,8 @@ Usage
     
     # Obtain the the stable notes
     model = NoteModel()
-    stablenotes, theo_peaks = model.calculate_notes(pitch_distribution, tonic_hz, rec_makam)
+    stablenotes, theo_peaks = model.calculate_notes(pitch_distribution, tonic_hz, rec_makam, 
+                                                    min_peak_ratio=0.1)
 
     # plot the result
     model.plot(pitch_distribution, stablenotes)
