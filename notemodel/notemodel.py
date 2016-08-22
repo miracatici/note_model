@@ -15,7 +15,7 @@ class NoteModel(object):
     def __init__(self, pitch_threshold=50):
         self.pitch_threshold = pitch_threshold
 
-    def calculate_notes(self, pitch_distribution, tonic_hz, makam):
+    def calculate_notes(self, pitch_distribution, tonic_hz, makam, min_peak_ratio=0.10):
         """
         Identifies the names of the performed notes from histogram peaks
         (stable pitches).
@@ -31,7 +31,7 @@ class NoteModel(object):
             pass
 
         # Calculate stable pitches
-        peak_idx, peak_heights = pd_copy.detect_peaks()
+        peak_idx, peak_heights = pd_copy.detect_peaks(min_peak_ratio=min_peak_ratio)
 
         stable_pitches_hz = pd_copy.bins[peak_idx]
         stable_notes = self._stable_pitches_to_notes(
